@@ -4,7 +4,7 @@ const port = process.env.PORT || 3001;
 
 app.use(express());
 app.get("/", (res, req) => {
-  res.status(200).send("it work.");
+  res.status(200).json({ message: "it work." });
 });
 app.get("/list/weight", (req, res) => {
   res.json({
