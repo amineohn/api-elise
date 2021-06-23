@@ -38,5 +38,15 @@ app.post("/add/weight/:number", (req, res) => {});
 app.get("/add/weight/:number", (req, res, next) => {
   next.end();
 });
+app.param(["deposit"], function (req, res, next, value) {
+  res.status(200).json({
+    deposit: value,
+  });
+  next();
+});
+app.post("/add/deposit/:deposit", (req, res) => {});
+app.get("/add/deposit/:deposit", (req, res, next) => {
+  next.end();
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
