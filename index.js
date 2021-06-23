@@ -31,7 +31,6 @@ app.param(["number"], function (req, res, next, value) {
   res.status(200).json({
     weight: value,
     type: "kg",
-    created: true,
   });
   next();
 });
