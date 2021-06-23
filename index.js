@@ -35,5 +35,6 @@ app.param(["number"], function (req, res, next, value) {
   next();
 });
 app.post("/add/weight/:number", (req, res) => {});
+app.get("/add/weight/:number", (req, res) => {});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
