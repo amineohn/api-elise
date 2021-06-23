@@ -27,14 +27,15 @@ app.get("/session/error", (err, res) => {
 });
 
 // endpoints
-
-app.post("/add/weight/:number", (req, res) => {
+app.param(["number"], function (req, res, next, value) {
   res.status(200).json({
-    weight: "10",
+    weight: value,
     type: "kg",
     created: true,
     value: "yes",
   });
+  next();
 });
+app.post("/add/weight/:number", (req, res) => {});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
