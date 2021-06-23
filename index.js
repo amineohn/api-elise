@@ -3,8 +3,10 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(express());
-app.get("/", (res, req) => {
-  res.status(200).json({ message: "it work." });
+app.get("/", function (req, res) {
+  res.json({
+    message: ["it work."],
+  });
 });
 app.get("/list/weight", (req, res) => {
   res.json({
