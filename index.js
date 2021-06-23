@@ -32,7 +32,6 @@ app.param(["number"], function (req, res, next, value) {
     weight: value,
     type: "kg",
     created: true,
-    value: "yes",
   });
   next();
 });
