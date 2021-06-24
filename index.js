@@ -14,14 +14,6 @@ app.get("/", (req, res) => {
   });
 });
 
-/*app.param(["number"], (req, res, next, value) => {
-  db.run("INSERT INTO weight (weight) VALUES (?)", value);
-  res.json({
-    weight: value,
-  });
-  next();
-});*/
-
 app.param(["type", "weight"], (req, res, next, value, value2) => {
   db.run("INSERT INTO weight (weight) VALUES (?)", value, value2);
   res.json({
@@ -30,13 +22,6 @@ app.param(["type", "weight"], (req, res, next, value, value2) => {
   });
   next();
 });
-/*app.param(["type"], (req, res, next, value) => {
-  db.run("INSERT INTO weight (type) VALUES (?)", value);
-  res.json({
-    type: value,
-  });
-  next();
-});*/
 
 app.post("/add/:type/:weight", (req, res, next) => {
   next.end();
