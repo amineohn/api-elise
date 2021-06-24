@@ -1,25 +1,17 @@
 {
-  "name": "elise-app-backend",
+  "name": "elise-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.0.1",
-    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "helmet": "^4.6.0",
-    "mongodb": "^3.6.9",
-    "mongodb-memory-server": "^6.9.6",
-    "morgan": "^1.10.0",
     "nodemon": "^2.0.7",
-    "passport": "^0.4.1",
-    "passport-auth0": "^1.4.0"
+    "sqlite3": "^5.0.2"
   }
 }

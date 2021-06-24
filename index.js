@@ -1,52 +1,43 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
+const cors = require("cors");
+var db = require("./src/database/database");
 
+app.use(cors());
 app.use(express());
+app.use(express.urlencoded({ extended: true }));
 app.get("/", function (req, res) {
   res.json({
     message: ["it work."],
   });
 });
-app.get("/list/weight", (req, res) => {
-  res.json({
-    weight: ["200kg"],
-    type: ["Caisse"],
-    deposit: ["Canettes"],
-  });
-});
-
-app.get("/session/error", (err, res) => {
-  if (typeof err === "string") {
-    return res.status(400).json({ message: err });
-  }
-
-  if (!res.status(500)) {
-    return res.status(500).json({ message: err.message });
-  }
-});
-
-// endpoints
 app.param(["number"], function (req, res, next, value) {
-  res.status(200).json({
+  db.run("INSERT INTO weight (weight) VALUES (?)", value);
+  res.json({
     weight: value,
-    type: "kg",
   });
   next();
 });
-app.post("/add/weight/:number", (req, res) => {});
-app.get("/add/weight/:number", (req, res, next) => {
+app.post("/weight/:number", function (req, res, next, value) {
   next.end();
 });
-app.param(["deposit"], function (req, res, next, value) {
-  res.status(200).json({
-    deposit: value,
+app.get("/weight", (req, res) => {
+  db.run(
+    `CREATE TABLE IF NOT EXISTS weight (id INTEGER PRIMARY KEY AUTOINCREMENT, weight int)`
+  );
+  var params = [];
+  db.all("SELECT * from weight", params, (err, rows) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: rows,
+    });
   });
-  next();
 });
-app.post("/add/deposit/:deposit", (req, res) => {});
-app.get("/add/deposit/:deposit", (req, res, next) => {
-  next.end();
-});
+app.get("/list/weight", function (res, req) {});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
