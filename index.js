@@ -22,28 +22,26 @@ app.get("/", (req, res) => {
   next();
 });*/
 
-app.param(["weight"], (req, res, next, value) => {
-  db.run("INSERT INTO weight (weight) VALUES (?)", value);
+app.param(["type", "weight"], (req, res, next, value, value2) => {
+  db.run("INSERT INTO weight (weight) VALUES (?)", value, value2);
   res.json({
     weight: value,
+    type: value2,
   });
   next();
 });
-app.param(["type"], (req, res, next, value) => {
+/*app.param(["type"], (req, res, next, value) => {
   db.run("INSERT INTO weight (type) VALUES (?)", value);
   res.json({
     type: value,
   });
   next();
-});
+});*/
 
-app.post("/weight/:type/:weight", (req, res, next, value) => {
-  req.params["type"];
-  req.params["weight"];
-
+app.post("/add/:type/:weight", (req, res, next) => {
   next.end();
 });
-app.get("/weight", (req, res) => {
+app.get("/list/weight", (req, res) => {
   db.all("SELECT * from weight", (err, rows) => {
     if (err) {
       res.status(400).json({ error: err.message });
