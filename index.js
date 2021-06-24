@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.param(["type", "weight"], (req, res, next, value, value2) => {
-  db.run("INSERT INTO weight (weight) VALUES (?)", value, value2);
+  db.run("INSERT INTO weight (weight, type) VALUES (?, ?)", value, value2);
   res.json({
     weight: value,
     type: value2,
