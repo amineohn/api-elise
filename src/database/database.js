@@ -1,11 +1,11 @@
-var sql = require('sqlite3').verbose()
-const db = new sql.Database('./src/database/db.sqlite', (err) => {
-    if (err) {
-        console.error(err.message)
-        throw err
-    } else {
-        console.log('Connected to the SQLite database.')
-    }
+const mysql = require('mysql')
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'database',
+    port: '8889',
 })
 
-module.exports = db
+connection.connect()
+module.exports = connection

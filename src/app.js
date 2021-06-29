@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const db = require('./database/database')
+const connection = require('./database/database')
 const port = process.env.PORT || 3001
 const app = express()
 
@@ -9,9 +9,9 @@ app.use(express())
 app.use(express.urlencoded({ extended: true }))
 
 app.get(`/insert`, (req, res) => {
-    db.run(
-        ` CREATE TABLE IF NOT EXISTS data (id INTEGER, type TEXT, weight INTEGER, matter TEXT, PRIMARY KEY("id"); 
-          CREATE TABLE IF NOT EXISTS type (id INTEGER, type TEXT, PRIMARY KEY("id")`,
+    connection.query(
+        ` CREATE TABLE IF NOT EXISTS data (id int, type varchar, weight int, matter varchar, PRIMARY KEY("id"); 
+          CREATE TABLE IF NOT EXISTS type (id int, type varchar, PRIMARY KEY("id")`,
         (err) =>
             res.json({
                 database: {
@@ -34,11 +34,9 @@ app.get(`/`, (req, res) => {
 })
 
 app.param([`type`, `weight`, `matter`], (req, res, next) => {
-    db.run(
+    connection.query(
         `INSERT INTO data (type, weight, matter) VALUES (?, ?, ?)`,
-        req.params.type,
-        req.params.weight,
-        req.params.matter
+        [req.params.type, req.params.weight, req.params.matter]
     )
     res.json({
         weight: req.params.weight,
@@ -53,7 +51,7 @@ app.post(`/add/:type/:weight/:matter`, (req, res, next) => {
 })
 
 app.param([`value`], (req, res, next, value) => {
-    db.run(`INSERT INTO type (type) VALUES (?)`, value)
+    connection.query(`INSERT INTO type (type) VALUES (?)`, [value])
     res.json({
         type: value,
     })
@@ -65,7 +63,7 @@ app.post(`/put/:value`, (req, res, next) => {
 })
 
 app.get(`/list`, (req, res) => {
-    db.all(`SELECT * from data`, (err, rows) => {
+    connection.query(`SELECT * from data`, (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message })
             return
@@ -79,7 +77,7 @@ app.get(`/list`, (req, res) => {
 })
 
 app.get(`/type`, (req, res) => {
-    db.all(`SELECT * from type`, (err, rows) => {
+    connection.query(`SELECT * from type`, (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message })
             return
