@@ -10,30 +10,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(`/insert`, (req, res) => {
   db.run(
-    `CREATE TABLE IF NOT EXISTS data (
-    id INTEGER,
-    type TEXT, 
-    weight INTEGER, 
-    matter TEXT,
-    PRIMARY KEY("id")
-    )`,
-    (err) =>
-      res.json({
-        database: {
-          insert: true,
-          stack: {
-            errors: err,
-          },
-          message: err ? `Table as been added` : `an error was occured`,
-        },
-      })
-  );
-  db.run(
-    `CREATE TABLE IF NOT EXISTS type (
-    id INTEGER,
-    type TEXT, 
-    PRIMARY KEY("id")
-    )`,
+    `
+      CREATE TABLE IF NOT EXISTS data (id INTEGER, type TEXT, weight INTEGER, matter TEXT, PRIMARY KEY("id");
+      CREATE TABLE IF NOT EXISTS type (id INTEGER, type TEXT, PRIMARY KEY("id")
+    `,
     (err) =>
       res.json({
         database: {
