@@ -8,37 +8,68 @@ app.use(cors());
 app.use(express());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
+app.get(`/`, (req, res) => {
+  db.run(
+    `CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY AUTOINCREMENT, type text, weight int, matter text)`,
+    (err) => {
+      if (err) {
+        console.error("table is already created");
+      }
+    }
+  );
   res.json({
-    message: ["it work."],
+    message: `it work.`,
+    db: `the table as been added`,
   });
 });
 
-app.param(["type", "weight"], (req, res, next, value, value2) => {
-  db.run("INSERT INTO weight (weight, type) VALUES (?, ?)", value, value2);
+app.param([`type`, `weight`, `matter`], (req, res, next) => {
+  db.run(
+    `INSERT INTO data (type, weight, matter) VALUES (?, ?, ?)`,
+    req.params.type,
+    req.params.weight,
+    req.params.matter
+  );
   res.json({
-    weight: value,
-    type: value2,
+    weight: req.params.weight,
+    type: req.params.type,
+    matter: req.params.matter,
+    show: "data is finally added",
   });
   next();
 });
 
-app.post("/add/:type/:weight", (req, res, next) => {
+app.post(`/add/:type/:weight/:matter`, (req, res, next) => {
   next.end();
 });
-app.get("/list/weight", (req, res) => {
-  db.all("SELECT * from weight", (err, rows) => {
+
+app.get(`/list`, (req, res) => {
+  db.all(`SELECT * from data`, (err, rows) => {
     if (err) {
       res.status(400).json({ error: err.message });
       return;
     }
     res.json({
-      message: "success",
+      success: true,
       data: rows,
+      error: false,
     });
   });
 });
 
-app.get("/list/weight", (res, req) => {});
+app.get(`/list/type`, (req, res) => {
+  res.json({
+    data: [
+      {
+        pallets: {
+          type: `Europe`,
+        },
+        dumpsters: {
+          type: `2 Tonnes`,
+        },
+      },
+    ],
+  });
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
