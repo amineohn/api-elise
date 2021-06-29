@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.get(`/insert`, (req, res) => {
     connection.query(
-        ` CREATE TABLE IF NOT EXISTS data (id int, type varchar, weight int, matter varchar, PRIMARY KEY("id"); 
+        ` CREATE TABLE IF NOT EXISTS data (id int, type varchar, weight int, matter varchar, PRIMARY KEY("id"),
           CREATE TABLE IF NOT EXISTS type (id int, type varchar, PRIMARY KEY("id")`,
         (err) =>
             res.json({
