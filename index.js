@@ -1,8 +1,8 @@
 const express = require("express");
-const app = express();
-const port = process.env.PORT || 3001;
 const cors = require("cors");
 const db = require("./src/database/database");
+const port = process.env.PORT || 3001;
+const app = express();
 
 app.use(cors());
 app.use(express());
@@ -10,12 +10,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get(`/`, (req, res) => {
   db.run(
-    `CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY AUTOINCREMENT, type text, weight int, matter text)`,
-    (err) => {
-      if (err) {
-        console.error("table is already created");
-      }
-    }
+    `CREATE TABLE IF NOT EXISTS data (
+    id INTEGER,
+    type TEXT, 
+    weight INTEGER, 
+    matter TEXT,
+    PRIMARY KEY("id")
+    )`,
+    (err) => console.error((err = "table is already created"))
   );
   res.json({
     message: `it work.`,
