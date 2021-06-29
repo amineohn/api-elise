@@ -17,12 +17,14 @@ app.get(`/`, (req, res) => {
     matter TEXT,
     PRIMARY KEY("id")
     )`,
-    (err) => console.error((err = "table is already created"))
+    (err) =>
+      res.json({
+        database: {
+          insert: true,
+          message: err ? `the table as been added` : `table is already created`,
+        },
+      })
   );
-  res.json({
-    message: `it work.`,
-    db: `the table as been added`,
-  });
 });
 
 app.param([`type`, `weight`, `matter`], (req, res, next) => {
