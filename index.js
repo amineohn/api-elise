@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express());
 app.use(express.urlencoded({ extended: true }));
 
-app.get(`/`, (req, res) => {
+app.get(`/insert`, (req, res) => {
   db.run(
     `CREATE TABLE IF NOT EXISTS data (
     id INTEGER,
@@ -21,10 +21,35 @@ app.get(`/`, (req, res) => {
       res.json({
         database: {
           insert: true,
-          message: err ? `the table as been added` : `table is already created`,
+          stack: {
+            errors: err,
+          },
+          message: err ? `Table as been added` : `an error was occured`,
         },
       })
   );
+  db.run(
+    `CREATE TABLE IF NOT EXISTS type (
+    id INTEGER,
+    type TEXT, 
+    PRIMARY KEY("id")
+    )`,
+    (err) =>
+      res.json({
+        database: {
+          insert: true,
+          stack: {
+            errors: err,
+          },
+          message: err ? `Table as been added` : `an error was occured`,
+        },
+      })
+  );
+});
+app.get(`/`, (req, res) => {
+  res.json({
+    message: "api should work now",
+  });
 });
 
 app.param([`type`, `weight`, `matter`], (req, res, next) => {
@@ -38,12 +63,23 @@ app.param([`type`, `weight`, `matter`], (req, res, next) => {
     weight: req.params.weight,
     type: req.params.type,
     matter: req.params.matter,
-    show: "data is finally added",
   });
   next();
 });
 
 app.post(`/add/:type/:weight/:matter`, (req, res, next) => {
+  next.end();
+});
+
+app.param([`value`], (req, res, next, value) => {
+  db.run(`INSERT INTO type (type) VALUES (?)`, value);
+  res.json({
+    type: value,
+  });
+  next();
+});
+
+app.post(`/put/:value`, (req, res, next) => {
   next.end();
 });
 
@@ -60,19 +96,17 @@ app.get(`/list`, (req, res) => {
     });
   });
 });
-
-app.get(`/list/type`, (req, res) => {
-  res.json({
-    data: [
-      {
-        pallets: {
-          type: `Europe`,
-        },
-        dumpsters: {
-          type: `2 Tonnes`,
-        },
-      },
-    ],
+app.get(`/type`, (req, res) => {
+  db.all(`SELECT * from type`, (err, rows) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      success: true,
+      data: rows,
+      error: false,
+    });
   });
 });
 
