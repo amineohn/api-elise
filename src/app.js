@@ -26,6 +26,7 @@ app.get(`/insert`, (req, res) => {
             })
     )
 })
+
 app.get(`/`, (req, res) => {
     res.json({
         message: 'api should work now',
@@ -76,6 +77,7 @@ app.get(`/list`, (req, res) => {
         })
     })
 })
+
 app.get(`/type`, (req, res) => {
     db.all(`SELECT * from type`, (err, rows) => {
         if (err) {
