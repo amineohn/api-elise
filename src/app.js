@@ -33,51 +33,40 @@ app.get(`/`, (req, res) => {
     })
 })
 
-app.param([`type`, `weight`, `matter`], (req, res, next) => {
-    connection.query(
-        `INSERT INTO data (type, weight, matter) VALUES (?, ?, ?)`,
-        [req.params.type, req.params.weight, req.params.matter]
-    )
+app.param([`weight`], (req, res, next) => {
+    connection.query(`INSERT INTO data (weight) VALUES (?)`, [
+        req.params.weight,
+    ])
     res.json({
         weight: req.params.weight,
+        //type: req.params.type,
+        // matter: req.params.matter,
+    })
+    next()
+})
+
+app.post(`/add/:weight`, (req, res, next) => {
+    next.end()
+})
+
+app.param([`type`, `matter`], (req, res, next, type, matter) => {
+    connection.query(`INSERT INTO type (type, matter) VALUES (?, ?)`, [
+        req.params.type,
+        req.params.matter,
+    ])
+    res.json({
         type: req.params.type,
         matter: req.params.matter,
     })
     next()
 })
 
-app.post(`/add/:type/:weight/:matter`, (req, res, next) => {
-    next.end()
-})
-
-app.param([`value`], (req, res, next, value) => {
-    connection.query(`INSERT INTO type (type) VALUES (?)`, [value])
-    res.json({
-        type: value,
-    })
-    next()
-})
-
-app.post(`/put/:value`, (req, res, next) => {
+app.post(`/type/:type/:matter`, (req, res, next) => {
     next.end()
 })
 
 app.get(`/list`, (req, res) => {
     connection.query(`SELECT * from data`, (err, rows) => {
-        if (err) {
-            res.status(400).json({ error: err.message })
-            return
-        }
-        res.json({
-            success: true,
-            data: rows,
-            error: false,
-        })
-    })
-})
-
-app.get(`/type`, (req, res) => {
-    connection.query(`SELECT * from type`, (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message })
             return
