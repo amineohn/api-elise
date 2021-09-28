@@ -10,37 +10,23 @@ app.use(express.urlencoded({ extended: true }))
 
 app.get(`/`, (req, res) => {
     res.json({
+        success: true,
         message: 'api should work now',
     })
 })
-
-app.param([`weight`], (req, res, next) => {
-    connection.query(`INSERT INTO data (weight) VALUES (?)`, [
-        req.params.weight,
-    ])
+app.param([`matter`, `type`, `weight`], (req, res, next) => {
+    connection.query(
+        `INSERT INTO data (matter, type, weight) VALUES ('${req.params.weight}', '${req.params.type}', '${req.params.matter}')`
+    )
     res.json({
-        weight: req.params.weight,
-    })
-    next()
-})
-
-app.post(`/add/:weight`, (req, res, next) => {
-    next.end()
-})
-
-app.param([`type`, `matter`], (req, res, next) => {
-    connection.query(`INSERT INTO type (type, matter) VALUES (?, ?)`, [
-        req.params.type,
-        req.params.matter,
-    ])
-    res.json({
+        weight: req.params.matter,
         type: req.params.type,
-        matter: req.params.matter,
+        matter: req.params.weight,
     })
     next()
 })
 
-app.post(`/type/:type/:matter`, (req, res, next) => {
+app.get(`/add/:matter/:type/:weight`, (req, res, next) => {
     next.end()
 })
 
