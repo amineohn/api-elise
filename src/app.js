@@ -3,32 +3,26 @@ const cors = require('cors')
 const connection = require('./database/database')
 const port = process.env.PORT || 3001
 const app = express()
-
 app.use(cors())
 app.use(express())
+app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
 app.get(`/`, (req, res) => {
     res.json({
         success: true,
         message: 'api should work now',
     })
 })
-app.param([`matter`, `type`, `weight`], (req, res, next) => {
+app.post(`/add`, (req, res) => {
     connection.query({
         sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
-        values: [req.params.weight, req.params.type, req.params.matter],
+        values: [req.body.weight, req.body.type, req.body.matter],
     })
     res.json({
-        weight: req.params.matter,
-        type: req.params.type,
-        matter: req.params.weight,
+        weight: req.body.matter,
+        type: req.body.type,
+        matter: req.body.weight,
     })
-    next()
-})
-
-app.get(`/add/:matter/:type/:weight`, (req, res, next) => {
-    next.end()
 })
 
 app.get(`/list`, (req, res) => {
