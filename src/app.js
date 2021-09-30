@@ -15,9 +15,10 @@ app.get(`/`, (req, res) => {
     })
 })
 app.param([`matter`, `type`, `weight`], (req, res, next) => {
-    connection.query(
-        `INSERT INTO data (matter, type, weight) VALUES ('${req.params.weight}', '${req.params.type}', '${req.params.matter}') LIMIT 1`
-    )
+    connection.query({
+        sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
+        values: [req.params.weight, req.params.type, req.params.matter],
+    })
     res.json({
         weight: req.params.matter,
         type: req.params.type,
