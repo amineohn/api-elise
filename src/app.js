@@ -16,12 +16,12 @@ app.get(`/`, (req, res) => {
 app.post(`/add`, (req, res) => {
     connection.query({
         sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
-        values: [req.body.weight, req.body.type, req.body.matter],
+        values: [req.body.matter, req.body.type, req.body.weight],
     })
     res.json({
-        weight: req.body.matter,
+        weight: req.body.weight,
         type: req.body.type,
-        matter: req.body.weight,
+        matter: req.body.matter,
     })
 })
 
@@ -29,7 +29,6 @@ app.get(`/list`, (req, res) => {
     connection.query(`SELECT * from data`, (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message })
-            return
         }
         res.json({
             success: true,
