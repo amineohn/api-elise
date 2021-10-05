@@ -93,7 +93,7 @@ app.get(`/list`, (req, res) => {
     })
 })
 setInterval(() => {
-    connection.query('SELECT 1') // bypass code: 'PROTOCOL_CONNECTION_LOST'
+    connection.query('SELECT 1')
 }, 5000)
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
