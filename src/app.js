@@ -72,16 +72,12 @@ app.post(`/code`, (req, res) => {
         matter: req.body.matter,
     })
 })
-
-app.delete(`/delete`, (req, res) => {
+app.delete(`/delete/:id`, (req, res) => {
     connection.query({
-        sql: `DELETE FROM data WHERE weight LIMIT 1`,
-        values: [req.body.matter, req.body.type, req.body.weight],
+        sql: `DELETE FROM data WHERE id = ${req.params.id}`,
     })
     res.json({
-        weight: req.body.weight,
-        type: req.body.type,
-        matter: req.body.matter,
+        id: req.params.id,
     })
 })
 
@@ -96,5 +92,8 @@ app.get(`/list`, (req, res) => {
         })
     })
 })
+setInterval(() => {
+    connection.query('SELECT 1') // bypass code: 'PROTOCOL_CONNECTION_LOST'
+}, 5000)
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
