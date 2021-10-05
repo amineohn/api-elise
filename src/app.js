@@ -4,6 +4,8 @@ const connection = require('./database/database')
 const port = process.env.PORT || 3001
 const app = express()
 const nodemailer = require('nodemailer')
+io = require('socket.io')(server)
+
 require('dotenv').config()
 app.use(cors())
 app.use(express())
