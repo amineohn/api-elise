@@ -3,3 +3,7 @@ yarn.lock
 package-lock.json
 .history
 db.sqlite-journal
+
+.env
+.env.local
+.env.production
