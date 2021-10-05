@@ -51,8 +51,8 @@ app.post(`/code`, (req, res) => {
             from: 'smkamine@outlook.fr',
             to: 'amineprojet7@gmail.com',
             subject: `Poids Fin de journée`,
-            text: `Liste des maitères: ${JSON.stringify(rows)}`,
-            html: `Liste des maitères: ${JSON.stringify(rows)}`,
+            text: `Liste des matières: \n\n ${JSON.stringify(rows)}`,
+            html: `Liste des matières: <br /> <br />${JSON.stringify(rows)}`,
         }
         req.body.code === 'generatedsuccess'
             ? transporter.sendMail(options, (error, info) =>
