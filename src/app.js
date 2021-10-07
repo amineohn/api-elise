@@ -164,31 +164,7 @@ app.post(`/code`, (req, res) => {
         )
     })
 })
-app.get(`/console`, (req, res) => {
-    // testing
-    //select sum(weight) AS Total from data
-    connection.query('SELECT * from data', (err, rows) => {
-        if (err) {
-            res.status(400).json({ error: err.message })
-        }
-        res.json({
-            weight: forColumn(rows, 'weight', true),
-            type: forColumn(rows, 'type', false),
-            matter: forColumn(rows, 'matter', false),
-        })
-        connection.query(
-            'SELECT SUM(weight) AS total FROM data',
-            (err, rows) => {
-                if (err) {
-                    res.status(400).json({ error: err.message })
-                }
-                res.json({
-                    total: rows[0].total,
-                })
-            }
-        )
-    })
-})
+
 app.delete(`/delete/:id`, (req, res) => {
     if (res) {
         io.emit('refresh feed')
