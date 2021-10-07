@@ -96,11 +96,6 @@ app.post(`/add`, (req, res) => {
         ])
         console.log(data)
     })
-    /*  res.json({
-        weight: req.body.weight,
-        type: req.body.type,
-        matter: req.body.matter,
-    })*/
 })
 
 app.post(`/code`, (req, res) => {
