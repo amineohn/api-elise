@@ -96,18 +96,34 @@ app.post(`/add`, (req, res) => {
         console.log(data)
     })
 })
-
+const forColumn = (matrix, col, plus) => {
+    var column = []
+    for (var i = 0; i < matrix.length; i++) {
+        column.push(plus ? matrix[i][col] + `kg` : matrix[i][col])
+    }
+    return column
+}
 app.post(`/code`, (req, res) => {
     connection.query('SELECT * from data', (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message })
         }
+        let weight = forColumn(rows, 'weight', true)
+        let type = forColumn(rows, 'type', false)
+        let matter = forColumn(rows, 'matter', false)
+        console.log(weight + '\n' + type + '\n' + matter + '\n')
         const options = {
             from: 'smkamine@outlook.fr',
             to: 'amineprojet7@gmail.com',
             subject: `Poids Fin de journée`,
-            text: `Liste des matières: \n\n ${JSON.stringify(rows)}`,
-            html: `Liste des matières: <br /> <br />${JSON.stringify(rows)}`,
+            text: `Liste des matières: \n\n Poids: ${weight.join(
+                ' '
+            )} \n Types: ${type.join(' ')} \n Matières: ${matter.join(' ')}`,
+            html: `Liste des matières: <br /> <br />Poids: ${weight.join(
+                ' '
+            )} <br /> Types: ${type.join(' ')} <br /> Matières: ${[
+                matter.join(' '),
+            ]}`,
         }
         req.body.code === 'generatedsuccess'
             ? transporter.sendMail(options, (error, info) =>
@@ -118,10 +134,60 @@ app.post(`/code`, (req, res) => {
             : res.json({
                   code: 'notfound',
               })
+        res.json({
+            weight: forColumn(rows, 'weight', true),
+            type: forColumn(rows, 'type', false),
+            matter: forColumn(rows, 'matter', false),
+            code: req.body.code,
+        })
+        connection.query(
+            'SELECT SUM(weight) AS total FROM data',
+            (err, rows) => {
+                if (err) {
+                    res.status(400).json({ error: err.message })
+                }
+                const options = {
+                    from: 'smkamine@outlook.fr',
+                    to: 'amineprojet7@gmail.com',
+                    subject: `Poids Fin de journée`,
+                    text: `Total du jour \n\n Total: ${rows[0].total} kgs`,
+                }
+                req.body.code === 'generatedsuccess'
+                    ? transporter.sendMail(options, (error, info) =>
+                          error
+                              ? console.log(error)
+                              : console.log('Message sent: ' + info.response)
+                      )
+                    : res.json({
+                          code: 'notfound',
+                      })
+            }
+        )
     })
-
-    res.json({
-        code: req.body.code,
+})
+app.get(`/console`, (req, res) => {
+    // testing
+    //select sum(weight) AS Total from data
+    connection.query('SELECT * from data', (err, rows) => {
+        if (err) {
+            res.status(400).json({ error: err.message })
+        }
+        res.json({
+            weight: forColumn(rows, 'weight', true),
+            type: forColumn(rows, 'type', false),
+            matter: forColumn(rows, 'matter', false),
+        })
+        connection.query(
+            'SELECT SUM(weight) AS total FROM data',
+            (err, rows) => {
+                if (err) {
+                    res.status(400).json({ error: err.message })
+                }
+                res.json({
+                    total: rows[0].total,
+                })
+            }
+        )
     })
 })
 app.delete(`/delete/:id`, (req, res) => {
