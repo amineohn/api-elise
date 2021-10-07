@@ -81,11 +81,11 @@ app.post(`/add`, (req, res) => {
     } else {
         io.emit('error')
     }
+    connection.query({
+        sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
+        values: [req.body.matter, req.body.type, req.body.weight],
+    })
     io.on('add', (data) => {
-        connection.query({
-            sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
-            values: [req.body.matter, req.body.type, req.body.weight],
-        })
         io.emit('add', [
             {
                 weight: req.body.weight,
@@ -130,10 +130,10 @@ app.delete(`/delete/:id`, (req, res) => {
     } else {
         io.emit('error')
     }
+    connection.query({
+        sql: `DELETE FROM data WHERE id = ${req.params.id}`,
+    })
     io.on('delete', (data) => {
-        connection.query({
-            sql: `DELETE FROM data WHERE id = ${req.params.id}`,
-        })
         io.emit('delete', [
             {
                 id: req.body.id,
