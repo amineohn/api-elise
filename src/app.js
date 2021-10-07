@@ -4,17 +4,40 @@ const connection = require('./database/database')
 const port = process.env.PORT || 3001
 const app = express()
 const nodemailer = require('nodemailer')
-io = require('socket.io')(app)
+const connect = app.listen(port, () => console.log(`Listening on port ${port}`))
 
+const io = require('socket.io')(connect, {
+    cors: { origin: '*', methods: ['GET', 'POST', 'DELETE'] },
+    transports: ['websocket', 'polling'],
+    path: '/socket.io',
+    serveClient: true,
+})
 require('dotenv').config()
 app.use(cors())
 app.use(express())
 app.use(express.json())
+app.use((req, res, next) => {
+    const origin = req.get('origin')
+    res.header('Access-Control-Allow-Origin', origin)
+    res.header('Access-Control-Allow-Credentials', true)
+    res.header(
+        'Access-Control-Allow-Methods',
+        'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+    )
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma'
+    )
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(204)
+    } else {
+        next()
+    }
+})
 app.use(express.urlencoded({ extended: true }))
 
-const server = false
 const transporter = nodemailer.createTransport({
-    host: server ? process.env.HOST : process.env.HOST_SERVER,
+    host: process.env.HOST,
     secureConnection: false,
     port: process.env.PORT,
     tls: {
@@ -25,7 +48,29 @@ const transporter = nodemailer.createTransport({
         pass: process.env.PASSWORD,
     },
 })
+io.on('connection', function (socket) {
+    socket.io.opts.transports = ['websocket']
+    console.log(socket + ' a user connected')
 
+    socket.on('add', function (data) {
+        socket.emit('broadcast', data)
+    })
+    var hs = socket.handshake
+    console.log('A socket with sessionID ' + hs.sessionID + ' connected!')
+    var intervalID = setInterval(function () {
+        if (hs && hs.session)
+            hs.session.reload(function () {
+                hs.session.touch().save()
+            })
+    }, 60 * 100)
+    socket.on('disconnect', function () {
+        console.log(
+            'A socket with sessionID ' + hs.sessionID + ' disconnected!'
+        )
+        clearInterval(intervalID)
+    })
+    socket.join(socket.handshake.sessionID)
+})
 app.get(`/`, (req, res) => {
     res.json({
         success: true,
@@ -33,9 +78,21 @@ app.get(`/`, (req, res) => {
     })
 })
 app.post(`/add`, (req, res) => {
+    app.locals.io = io
+    if (res) {
+        io.emit('refresh feed')
+    } else {
+        io.emit('error')
+    }
     connection.query({
         sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
         values: [req.body.matter, req.body.type, req.body.weight],
+    })
+    const locals = req.app.locals.io
+    locals.emit('add', {
+        weight: req.body.weight,
+        type: req.body.type,
+        matter: req.body.matter,
     })
     res.json({
         weight: req.body.weight,
@@ -69,9 +126,6 @@ app.post(`/code`, (req, res) => {
 
     res.json({
         code: req.body.code,
-        weight: req.body.weight,
-        type: req.body.type,
-        matter: req.body.matter,
     })
 })
 app.delete(`/delete/:id`, (req, res) => {
@@ -97,5 +151,3 @@ app.get(`/list`, (req, res) => {
 setInterval(() => {
     connection.query('SELECT 1')
 }, 5000)
-
-app.listen(port, () => console.log(`Listening on port ${port}`))
