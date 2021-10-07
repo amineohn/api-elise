@@ -111,7 +111,6 @@ app.post(`/code`, (req, res) => {
         let weight = forColumn(rows, 'weight', true)
         let type = forColumn(rows, 'type', false)
         let matter = forColumn(rows, 'matter', false)
-        console.log(weight + '\n' + type + '\n' + matter + '\n')
         const options = {
             from: 'smkamine@outlook.fr',
             to: 'amineprojet7@gmail.com',
