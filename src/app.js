@@ -7,7 +7,10 @@ const nodemailer = require('nodemailer')
 const connect = app.listen(port, () => console.log(`Listening on port ${port}`))
 
 const io = require('socket.io')(connect, {
-    cors: { origin: '*', methods: ['GET', 'POST', 'DELETE'] },
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST', 'DELETE'],
+    },
     transports: ['websocket', 'polling'],
     path: '/socket.io',
     serveClient: true,
