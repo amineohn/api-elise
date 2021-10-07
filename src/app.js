@@ -76,17 +76,16 @@ app.get(`/`, (req, res) => {
     })
 })
 app.post(`/add`, (req, res) => {
-    app.locals.io = io
     if (res) {
         io.emit('refresh feed')
     } else {
         io.emit('error')
     }
-    connection.query({
-        sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
-        values: [req.body.matter, req.body.type, req.body.weight],
-    })
     io.on('add', (data) => {
+        connection.query({
+            sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
+            values: [req.body.matter, req.body.type, req.body.weight],
+        })
         io.emit('add', [
             {
                 weight: req.body.weight,
@@ -126,11 +125,21 @@ app.post(`/code`, (req, res) => {
     })
 })
 app.delete(`/delete/:id`, (req, res) => {
-    connection.query({
-        sql: `DELETE FROM data WHERE id = ${req.params.id}`,
-    })
-    res.json({
-        id: req.params.id,
+    if (res) {
+        io.emit('refresh feed')
+    } else {
+        io.emit('error')
+    }
+    io.on('delete', (data) => {
+        connection.query({
+            sql: `DELETE FROM data WHERE id = ${req.params.id}`,
+        })
+        io.emit('delete', [
+            {
+                id: req.body.id,
+            },
+        ])
+        console.log(data)
     })
 })
 
