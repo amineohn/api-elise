@@ -52,14 +52,11 @@ const transporter = nodemailer.createTransport({
     },
 })
 io.on('connection', function (socket) {
-    socket.io.opts.transports = ['websocket']
-    console.log(socket + ' a user connected')
-
     socket.on('add', function (data) {
         socket.emit('broadcast', data)
     })
     var hs = socket.handshake
-    console.log('A socket with sessionID ' + hs.sessionID + ' connected!')
+    console.log('A socket is connected!')
     var intervalID = setInterval(function () {
         if (hs && hs.session)
             hs.session.reload(function () {
@@ -67,9 +64,7 @@ io.on('connection', function (socket) {
             })
     }, 60 * 100)
     socket.on('disconnect', function () {
-        console.log(
-            'A socket with sessionID ' + hs.sessionID + ' disconnected!'
-        )
+        console.log('A socket is disconnected!')
         clearInterval(intervalID)
     })
     socket.join(socket.handshake.sessionID)
@@ -91,17 +86,21 @@ app.post(`/add`, (req, res) => {
         sql: `INSERT INTO data (matter, type, weight) VALUES (?, ?, ?)`,
         values: [req.body.matter, req.body.type, req.body.weight],
     })
-    const locals = req.app.locals.io
-    locals.emit('add', {
+    io.on('add', (data) => {
+        io.emit('add', [
+            {
+                weight: req.body.weight,
+                type: req.body.type,
+                matter: req.body.matter,
+            },
+        ])
+        console.log(data)
+    })
+    /*  res.json({
         weight: req.body.weight,
         type: req.body.type,
         matter: req.body.matter,
-    })
-    res.json({
-        weight: req.body.weight,
-        type: req.body.type,
-        matter: req.body.matter,
-    })
+    })*/
 })
 
 app.post(`/code`, (req, res) => {
