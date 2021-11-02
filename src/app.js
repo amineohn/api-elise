@@ -51,19 +51,19 @@ const transporter = nodemailer.createTransport({
         pass: process.env.PASSWORD,
     },
 })
-io.on('connection', function (socket) {
-    socket.on('add', function (data) {
+io.on('connection', (socket) => {
+    socket.on('add', (data) => {
         socket.emit('broadcast', data)
     })
     var hs = socket.handshake
     console.log('A socket is connected!')
-    var intervalID = setInterval(function () {
+    var intervalID = setInterval(() => {
         if (hs && hs.session)
-            hs.session.reload(function () {
+            hs.session.reload(() => {
                 hs.session.touch().save()
             })
     }, 60 * 100)
-    socket.on('disconnect', function () {
+    socket.on('disconnect', () => {
         console.log('A socket is disconnected!')
         clearInterval(intervalID)
     })
