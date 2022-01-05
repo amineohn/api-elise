@@ -7,3 +7,4 @@ db.sqlite-journal
 .env
 .env.local
 .env.production
+pnpm-lock.yaml
