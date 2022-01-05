@@ -96,6 +96,13 @@ app.post(`/add`, (req, res) => {
         console.log(data)
     })
 })
+app.post(`/reset`, (req, res) => {
+    connection.query({
+        sql: `DELETE FROM data`,
+    })
+    io.emit('refresh feed')
+})
+
 const forColumn = (matrix, col, plus) => {
     var column = []
     for (var i = 0; i < matrix.length; i++) {
@@ -112,7 +119,7 @@ app.post(`/code`, (req, res) => {
         let type = forColumn(rows, 'type', false)
         let matter = forColumn(rows, 'matter', false)
         const options = {
-            from: 'smkamine@outlook.fr',
+            from: 'System Elise <smkamine@outlook.fr>',
             to: 'amineprojet7@gmail.com',
             subject: `Poids Fin de journée`,
             text: `Liste des matières: \n\n Poids: ${weight.join(
@@ -124,7 +131,7 @@ app.post(`/code`, (req, res) => {
                 matter.join(' '),
             ]}`,
         }
-        req.body.code === 'generatedsuccess'
+        req.body.code === 'Brazza33!'
             ? transporter.sendMail(options, (error, info) =>
                   error
                       ? console.log(error)
